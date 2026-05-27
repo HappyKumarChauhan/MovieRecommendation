@@ -14,7 +14,7 @@ function App() {
 
     try {
       // Point this to your backend URL (localhost or Render)
-      const response = await axios.post('http://localhost:3000/recommend', { preference });
+      const response = await axios.post('https://movie-recommender-api-89u3.onrender.com/recommend', { preference });
       setMovies(response.data);
     } catch (err) {
       setError('Failed to fetch recommendations. Please try again.');

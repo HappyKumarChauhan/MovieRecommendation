@@ -10,7 +10,11 @@ const openai = new OpenAI({
 });
 
 // Enable CORS so our React frontend can talk to this backend
-fastify.register(cors, { origin: '*' });
+fastify.register(cors, { 
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+});
 
 fastify.post('/recommend', async (request, reply) => {
     const { preference } = request.body;
