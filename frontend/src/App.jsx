@@ -122,7 +122,23 @@ function App() {
             <div className="flex flex-col gap-6">
               {history.map((item) => {
                 // The database stores the movies as a JSON string, so we need to parse it back into an array
-                const recommendedList = JSON.parse(item.recommended_movies || "[]");
+                let recommendedList = [];
+                try {
+                  // Try to parse the AI's response
+                  let parsed = JSON.parse(item.recommended_movies || "[]");
+                  
+                  // Fix for ID 2: If the AI returned an array of stringified objects, parse them again
+                  if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                    parsed = parsed.map(str => JSON.parse(str));
+                  }
+                  
+                  recommendedList = Array.isArray(parsed) ? parsed : [];
+                } catch (err) {
+                  recommendedList = [{ 
+                    title: "AI Formatting Error", 
+                    description: "The AI returned broken data for this older entry, but your app caught the crash!" 
+                  }];
+                };
                 
                 return (
                   <div key={item.id} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg">
