@@ -9,7 +9,6 @@ const openai = new OpenAI({
     baseURL: "https://api.groq.com/openai/v1"
 });
 
-// Enable CORS so our React frontend can talk to this backend
 fastify.register(cors, { 
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -51,6 +50,21 @@ fastify.post('/recommend', async (request, reply) => {
         fastify.log.error(error);
         return reply.status(500).send({ error: 'Failed to fetch recommendations' });
     }
+});
+
+fastify.get('/history', async (request, reply) => {
+    return new Promise((resolve, reject) => {
+        // Fetch all rows, ordered by newest first
+        db.all("SELECT * FROM recommendations ORDER BY timestamp DESC", [], (err, rows) => {
+            if (err) {
+                reply.status(500).send({ error: "Failed to get data" });
+                reject(err);
+            } else {
+                reply.send(rows);
+                resolve();
+            }
+        });
+    });
 });
 
 // Start the server
